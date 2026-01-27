@@ -7,94 +7,125 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
 
+  // बैकएंड का लाइव यूआरएल (बिना स्लैश के)
+  const BACKEND_URL = "https://ai-saas-backend-e9u4.onrender.com";
+
   const generateAIContent = async () => {
     if (!prompt) return alert("Please type something!");
-
     setLoading(true);
     setResponse("");
 
     try {
-      // आपके बैकएंड सर्वर को रिक्वेस्ट भेज रहा है
-      const res = await axios.post("https://ai-saas-backend-e9u4.onrender.com", { prompt });
+      // /generate रूट पर POST रिक्वेस्ट
+      const res = await axios.post(`${BACKEND_URL}/generate`, { prompt });
       setResponse(res.data.result);
     } catch (error) {
       console.error("Error:", error);
-      setResponse("AI Response Failed. Please check server.");
+      setResponse("AI Response Failed. Please check if the server is awake.");
     } finally {
       setLoading(false);
     }
   };
 
-  // इतिहास लोड करने के लिए फंक्शन
   const fetchHistory = async () => {
     try {
-      const res = await axios.get("https://ai-saas-backend-e9u4.onrender.com/history");
+      const res = await axios.get(`${BACKEND_URL}/history`);
       setHistory(res.data);
     } catch (error) {
       console.error("हिस्ट्री लोड नहीं हुई", error);
+      alert("Could not load history. Is the backend live?");
     }
   };
 
   return (
-    <div style={{ padding: "50px", fontFamily: "Arial", textAlign: "center" }}>
-      <h1>AI SaaS App 🚀</h1>
-      <p>Enter a topic to generate content</p>
+    <div style={{ padding: "40px", fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", backgroundColor: "#0f172a", minHeight: "100-vh", color: "white" }}>
+      <h1 style={{ color: "#38bdf8", fontSize: "2.5rem" }}>AI SaaS App 🚀</h1>
+      <p style={{ color: "#94a3b8" }}>Generate professional AI content in seconds</p>
 
-      <div style={{ marginTop: "20px" }}>
+      <div style={{ marginTop: "30px" }}>
         <textarea
           rows="5"
-          cols="50"
-          placeholder="e.g. Write a tagline for a coffee shop"
+          style={{
+            width: "80%",
+            maxWidth: "600px",
+            padding: "15px",
+            borderRadius: "12px",
+            border: "1px solid #334155",
+            backgroundColor: "#1e293b",
+            color: "white",
+            fontSize: "1rem"
+          }}
+          placeholder="e.g. Write a professional email for a job application"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          style={{ padding: "10px", borderRadius: "10px", border: "1px solid #ccc" }}
         />
         <br />
         <button
           onClick={generateAIContent}
           disabled={loading}
           style={{
-            marginTop: "10px",
-            padding: "10px 20px",
-            backgroundColor: "#007bff",
+            marginTop: "15px",
+            padding: "12px 30px",
+            backgroundColor: loading ? "#64748b" : "#0284c7",
             color: "white",
             border: "none",
-            borderRadius: "5px",
-            cursor: "pointer"
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            transition: "0.3s"
           }}
         >
-          {loading ? "Generating..." : "Generate AI Content"}
+          {loading ? "AI is Thinking..." : "Generate AI Content ✨"}
         </button>
-        <button onClick={fetchHistory} className="text-cyan-400 mt-4 underline">
-          View Previous Generations 📜
-        </button>
-
-        <div className="mt-8 w-full max-w-2xl">
-          {history.map((item, index) => (
-            <div key={index} className="bg-[#1e293b] p-4 mb-3 rounded-lg border border-gray-700">
-              <p className="text-xs text-gray-500">{new Date(item.date).toLocaleString()}</p>
-              <p className="text-cyan-300 font-bold">Q: {item.prompt}</p>
-              <p className="text-gray-300 text-sm mt-2 line-clamp-2 italic">A: {item.response}</p>
-            </div>
-          ))}
-        </div>
-
       </div>
 
       {response && (
         <div style={{
-          marginTop: "30px",
+          marginTop: "40px",
           textAlign: "left",
-          backgroundColor: "#f4f4f4",
-          padding: "20px",
-          borderRadius: "10px",
+          backgroundColor: "#1e293b",
+          padding: "25px",
+          borderRadius: "15px",
           display: "inline-block",
-          maxWidth: "600px"
+          maxWidth: "700px",
+          borderLeft: "5px solid #38bdf8",
+          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
         }}>
-          <h3>Result:</h3>
-          <p style={{ whiteSpace: "pre-line" }}>{response}</p>
+          <h3 style={{ color: "#38bdf8", marginTop: "0" }}>Result:</h3>
+          <p style={{ whiteSpace: "pre-line", lineHeight: "1.6" }}>{response}</p>
         </div>
       )}
+
+      <hr style={{ margin: "50px 0", borderColor: "#334155" }} />
+
+      <button
+        onClick={fetchHistory}
+        style={{ background: "none", border: "none", color: "#38bdf8", cursor: "pointer", textDecoration: "underline", fontSize: "1.1rem" }}
+      >
+        View Previous Generations 📜
+      </button>
+
+      <div style={{ marginTop: "30px", display: "flex", flexDirection: "column", alignItems: "center", gap: "15px" }}>
+        {history.map((item, index) => (
+          <div key={index} style={{
+            backgroundColor: "#1e293b",
+            padding: "20px",
+            borderRadius: "12px",
+            width: "80%",
+            maxWidth: "600px",
+            textAlign: "left",
+            border: "1px solid #334155"
+          }}>
+            <p style={{ fontSize: "0.75rem", color: "#64748b", marginBottom: "8px" }}>
+              {new Date(item.date).toLocaleString()}
+            </p>
+            <p style={{ fontWeight: "bold", color: "#38bdf8" }}>Q: {item.prompt}</p>
+            <p style={{ fontSize: "0.9rem", color: "#cbd5e1", marginTop: "10px", fontStyle: "italic" }}>
+              A: {item.response.substring(0, 150)}...
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
