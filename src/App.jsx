@@ -48,7 +48,7 @@ function App() {
       {/* Header */}
       <div style={{ marginBottom: "40px" }}>
         <h1 style={{ color: "#38bdf8", fontSize: "3rem", fontWeight: "800", marginBottom: "10px" }}>AI SaaS Hub 🚀</h1>
-        <p style={{ color: "#94a3b8", fontSize: "1.1rem" }}>Powered by Gemini 1.5 Flash • 2026 Edition</p>
+        <p style={{ color: "#94a3b8", fontSize: "1.1rem" }}>Powered by Gemini 2.5 Flash • 2026 Edition</p>
       </div>
 
       {/* Input Section */}
